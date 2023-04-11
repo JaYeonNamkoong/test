@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="myboard">
+ <insert id="add" parameterType="bvo">
+	insert into myboard 
+	values(myboard_seq.nextVal,#{writer},#{subject},#{content},#{reip},sysdate)
+</insert>
+<select id="list" resultType="bvo">
+	select no,writer,subject,reip,regdate from myboard order by 1 desc
+</select>
+
+<select id="detail" resultType="bvo" parameterType="int">
+	select no,writer,subject,content,reip,regdate from myboard 
+	where no=#{no}
+</select>
+ </mapper>

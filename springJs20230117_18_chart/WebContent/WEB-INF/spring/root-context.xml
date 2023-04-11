@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<context:annotation-config />
+
+	<!-- DataSource 설정 및 MyBatis설정 -->
+	<!-- DataSource : JNDI -->
+	<bean id="dataSource"
+		class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/myora" />
+	</bean>
+	
+	<!-- Transactional AOP 설정 -->
+	<bean id="tm" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<tx:annotation-driven transaction-manager="tm"/>
+	
+	<!-- MyBatis SqlSessionFactoryBean에서 설정을 한다. -->
+	<bean id="factoryBean"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation"
+			value="classpath:kr/co/kosmo/mvc/config/config.xml" />
+		<property name="mapperLocations"
+			value="classpath*:kr/co/kosmo/mvc/mapper/*.xml" />
+	</bean>
+
+	<!-- Spring 제공 하는 SqlSessionTemplate -->
+	<bean id="ss" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="factoryBean" />
+	</bean>
+	<!-- DataSource 설정 및 MyBatis설정 끝 <bean id="membeDao" class="kr.co.kosmo.mvc.dao.MemberDao"> 
+		<property name="ss" ref="ss"></property> </bean> -->
+
+	<!-- fileupload를 위한 resolver 등록 fileupload CommonsMultipartResolver 추가해야 
+		한다. common-fileupload.jar -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
+</beans>
